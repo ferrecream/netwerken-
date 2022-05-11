@@ -1,11 +1,12 @@
 #ifdef _WIN32
 	#define _WIN32_WINNT _WIN32_WINNT_WIN7
 	#include <winsock2.h> //for all socket programming
-	#include <ws2tcpip.h> //for getaddrinfo, inet_pton, inet_ntop
+	#include <ws2tcpip.h> //for getaddrinfo, inet_pton, inet_ntop#include <time.h>
 	#include <stdio.h> //for fprintf, perror
 	#include <unistd.h> //for close
 	#include <stdlib.h> //for exit
-	#include <string.h> //for memset
+	#include <string.h>
+	#include <time.h> //for memset
 	void OSInit( void )
 	{
 		WSADATA wsaData;
@@ -124,11 +125,15 @@ int initialization()
 
 void execution( int internet_socket )
 {
+	time_t start_t, end_t;
+	   double diff_t;
+  
 	int aantalMaxPackets = 0;
 	int ontvangenPackets = 0;
 	int i = 0;
 	printf("hoeveel packeten wilt u maximum ontvangen : ");
 	scanf("%d", &aantalMaxPackets);
+	time(&start_t);
 	int number_of_bytes_received = 0;
 	char buffer[1000];
 	struct sockaddr_storage client_internet_address;
@@ -142,10 +147,12 @@ void execution( int internet_socket )
 	{
 		buffer[number_of_bytes_received] = '\0';
 		printf( "Received : %s\n", buffer );
+		 time(&end_t);
 		ontvangenPackets ++;
 	}
-
+	diff_t = difftime(end_t, start_t);
 }
+printf("Execution time = %f\n", diff_t);
 printf("ontvangen packeten = %d\n", ontvangenPackets);
 	//Step 2.2
 	int number_of_bytes_send = 0;
@@ -154,6 +161,8 @@ printf("ontvangen packeten = %d\n", ontvangenPackets);
 	{
 		perror( "sendto" );
 	}
+
+
 }
 
 void cleanup( int internet_socket )
