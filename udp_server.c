@@ -5,8 +5,10 @@
 	#include <stdio.h> //for fprintf, perror
 	#include <unistd.h> //for close
 	#include <stdlib.h> //for exit
+
 	#include <string.h>
 	#include <time.h> //for memset
+
 	void OSInit( void )
 	{
 		WSADATA wsaData;
@@ -33,6 +35,7 @@
 	#include <unistd.h> //for close
 	#include <stdlib.h> //for exit
 	#include <string.h> //for memset
+
 	int OSInit( void ) {}
 	int OSCleanup( void ) {}
 #endif
@@ -40,6 +43,7 @@
 int initialization();
 void execution( int internet_socket );
 void cleanup( int internet_socket );
+
 
 int main( int argc, char * argv[] )
 {
@@ -127,19 +131,31 @@ void execution( int internet_socket )
 {
 	time_t start_t, end_t;
 	   double diff_t;
-  
+
+	FILE * fp;
+  fp = fopen("C://Users//Gebruiker//Documents//netwerken-//test.csv","w+");
+
+	int timeout = 0;
+   printf("Hoeveel seconden timeout wilt U: ");
+   scanf("%d", &timeout);
+	 timeout = timeout * 1000;
+    if (setsockopt(internet_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
+               {perror("Error");}
+
+
 	int aantalMaxPackets = 0;
 	int ontvangenPackets = 0;
 	int i = 0;
 	printf("hoeveel packeten wilt u maximum ontvangen : ");
 	scanf("%d", &aantalMaxPackets);
+
 	time(&start_t);
 	int number_of_bytes_received = 0;
 	char buffer[1000];
 	struct sockaddr_storage client_internet_address;
 	socklen_t client_internet_address_length = sizeof client_internet_address;
 	for(i = 0 ; i<aantalMaxPackets ; i++){number_of_bytes_received = recvfrom( internet_socket, buffer, ( sizeof buffer ) - 1, 0, (struct sockaddr *) &client_internet_address, &client_internet_address_length );
-	if( number_of_bytes_received == -1 )
+	if( number_of_bytes_received == -1)
 	{
 		perror( "recvfrom" );
 	}
@@ -147,13 +163,16 @@ void execution( int internet_socket )
 	{
 		buffer[number_of_bytes_received] = '\0';
 		printf( "Received : %s\n", buffer );
-		 time(&end_t);
-		ontvangenPackets ++;
+		fprintf( fp,"Received : %s\n", buffer );
+		time(&end_t);
+	 	ontvangenPackets ++;
 	}
 	diff_t = difftime(end_t, start_t);
 }
 printf("Execution time = %f\n", diff_t);
 printf("ontvangen packeten = %d\n", ontvangenPackets);
+fprintf(fp,"Execution time = %f\n", diff_t);
+fprintf(fp,"ontvangen packeten = %d\n", ontvangenPackets);
 	//Step 2.2
 	int number_of_bytes_send = 0;
 	number_of_bytes_send = sendto( internet_socket, "Hello UDP world!", 16, 0, (struct sockaddr *) &client_internet_address, client_internet_address_length );
@@ -161,8 +180,7 @@ printf("ontvangen packeten = %d\n", ontvangenPackets);
 	{
 		perror( "sendto" );
 	}
-
-
+fclose(fp);
 }
 
 void cleanup( int internet_socket )
