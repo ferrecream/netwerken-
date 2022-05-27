@@ -149,11 +149,12 @@ void execution( int internet_socket )
 	printf("hoeveel packeten wilt u maximum ontvangen : ");
 	scanf("%d", &aantalMaxPackets);
 
-	time(&start_t);
+
 	int number_of_bytes_received = 0;
-	char buffer[1000];
-	struct sockaddr_storage client_internet_address;
-	socklen_t client_internet_address_length = sizeof client_internet_address;
+		char buffer[1000];
+		struct sockaddr_storage client_internet_address;
+		socklen_t client_internet_address_length = sizeof client_internet_address;
+	time(&start_t);
 	for(i = 0 ; i<aantalMaxPackets ; i++){number_of_bytes_received = recvfrom( internet_socket, buffer, ( sizeof buffer ) - 1, 0, (struct sockaddr *) &client_internet_address, &client_internet_address_length );
 	if( number_of_bytes_received == -1)
 	{
@@ -167,8 +168,10 @@ void execution( int internet_socket )
 		time(&end_t);
 	 	ontvangenPackets ++;
 	}
-	diff_t = difftime(end_t, start_t);
+
 }
+diff_t = difftime(end_t, start_t);
+
 printf("Execution time = %f\n", diff_t);
 printf("ontvangen packeten = %d\n", ontvangenPackets);
 fprintf(fp,"Execution time = %f\n", diff_t);
